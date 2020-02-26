@@ -1,0 +1,14 @@
+README.rst
+setup.py
+guillotina_notification/__init__.py
+guillotina_notification/api.py
+guillotina_notification/install.py
+guillotina_notification.egg-info/PKG-INFO
+guillotina_notification.egg-info/SOURCES.txt
+guillotina_notification.egg-info/dependency_links.txt
+guillotina_notification.egg-info/requires.txt
+guillotina_notification.egg-info/top_level.txt
+guillotina_notification/tests/__init__.py
+guillotina_notification/tests/conftest.py
+guillotina_notification/tests/fixtures.py
+guillotina_notification/tests/test_install.py
