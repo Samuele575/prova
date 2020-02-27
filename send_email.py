@@ -10,7 +10,7 @@ channel = connection.channel()
 
 my_func={
         'func': 'guillotina_notification.task.post_new_notification_email',
-        'args': ['john@doe.com', 'This is my second subject', 'Body of second email', 'Django-freeman'],
+        'args': ['john@doe.com', 'This the third subject sent', 'Body of another email', 'Django-freeman'],
         'kwargs': {},
 
         'user': 'root',

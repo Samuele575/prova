@@ -2,7 +2,14 @@ README.rst
 setup.py
 guillotina_notification/__init__.py
 guillotina_notification/api.py
+guillotina_notification/content.py
 guillotina_notification/install.py
+guillotina_notification/serialize.py
+guillotina_notification/services.py
+guillotina_notification/subscribers.py
+guillotina_notification/task.py
+guillotina_notification/utility_ws.py
+guillotina_notification/ws.py
 guillotina_notification.egg-info/PKG-INFO
 guillotina_notification.egg-info/SOURCES.txt
 guillotina_notification.egg-info/dependency_links.txt

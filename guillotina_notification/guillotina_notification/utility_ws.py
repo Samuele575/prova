@@ -33,8 +33,8 @@ class NotificationSenderUtility:
             if ricercato[0] == 'userId':
                 ws.user_id = ricercato[1]
 
-        print(ws.user_id)
         self._webservices.append(ws)
+        print(ws.user_id)
 
 
     def unregister_ws(self, ws):
@@ -61,7 +61,7 @@ class NotificationSenderUtility:
                 for ws in self._webservices:
                     #test per sapere se esistono le ws
                     print(ws.user_id)
-                    if notification.receverId == ws.user_id:
+                    if notification.recipientId == ws.user_id:
                         #test per capire se la ricerca va a buon fine
                         print(notification.status)
                         await ws.send_str(json.dumps(

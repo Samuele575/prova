@@ -15,7 +15,7 @@ async def notification_added(notification, event):
     
     print('Sono dentro il subscriber e mi attivo quando aggiungo una nuova notifica')
 
-    #utility = get_utility(INotificationSender)
-    #await utility.send_message(notification)
+    utility = get_utility(INotificationSender)
+    await utility.post_notification_in_ws_queue(notification)
 
 

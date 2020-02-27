@@ -10,7 +10,7 @@ channel = connection.channel()
 
 my_func={
         'func': 'guillotina_notification.task.post_new_notification_wsocket',
-        'args': ['Bob123', 'Websocket 4 Bob', 'Django-freeman'],
+        'args': ['Bob123', 'Bob messaggio in pipe e ws', 'Django-freeman'],
         'kwargs': {},
 
         'user': 'root',

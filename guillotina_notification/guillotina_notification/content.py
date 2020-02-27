@@ -1,23 +1,21 @@
-from guillotina import configure
-from guillotina import schema
-from guillotina import interfaces
-from guillotina import content
+from guillotina import configure, content, Interface, schema
 
-class INotification(interfaces.IItem):
+class INotification(Interface):
 
-    receverId = schema.Text()
+    not_type = schema.TextLine()
+    recipientId = schema.Text()
+    email_recipient = schema.TextLine()
     subject = schema.Text()
     message = schema.Text()
     application_name = schema.Text()
     status = schema.Text()
 
-    #secondo me si potrebbe mettere anche l'email come schema
-    #del tipo: 
-    #email_recipient: schema.TextLine() una linea senza \n o \r
-
 
 @configure.contenttype(
     type_name="Notification",
-    schema=INotification)
+    schema=INotification,
+    behaviors=[
+        "guillotina.behaviors.dublincore.IDublinCore",
+        "guillotina.behaviors.attachment.IAttachment"])
 class Notification(content.Item):
     pass

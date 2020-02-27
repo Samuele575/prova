@@ -18,13 +18,15 @@ class NotificationJSONSummarySerializer(DefaultJSONSummarySerializer):
             'creation_date': self.context.creation_date,
 	    
             #serializzo le notifiche
-            'receverId': self.context.receverId,
+            'not_type': self.context.not_type,
+            'recipientId': self.context.recipientId,
+            'email_recipient': self.context.email_recipient,
             'subject': self.context.subject,
             'message': self.context.message,
             'application_name': self.context.application_name,
             'status': self.context.status,
              
             #se volessimo essere precisi: 'author': Django-Freeman 
-	        'author': get_owners(self.context)[0] #sempre root idealmente
+	        'author': get_owners(self.context)[0] #ma per noi sempre root idealmente
         })
         return data
