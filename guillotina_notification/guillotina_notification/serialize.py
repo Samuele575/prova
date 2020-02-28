@@ -16,7 +16,7 @@ class NotificationJSONSummarySerializer(DefaultJSONSummarySerializer):
             #per ora passo l'ID della notifica
             'id': self.context.id,
             'creation_date': self.context.creation_date,
-	    
+            'modification_date': self.context.modification_date,
             #serializzo le notifiche
             'not_type': self.context.not_type,
             'recipientId': self.context.recipientId,

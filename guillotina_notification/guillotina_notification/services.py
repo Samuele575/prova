@@ -5,7 +5,7 @@ from guillotina.interfaces import IContainer, IResourceSerializeToJsonSummary
 from guillotina.utils import get_current_container #, get_current_request
 
 
-#--------------------------------------
+#--------------------------------------------------------------------------------------------------------------------------
 @configure.service(for_=IContainer, name='@get-notifications-notified',
                    permission='guillotina.Authenticated')
 async def get_notification_view(context, request):
@@ -49,7 +49,10 @@ async def get_notification_view(context, request):
     return results
 
 
-#--------------------------------------
+
+
+
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 @configure.service(for_=IContainer, name='@get-notifications-not-notified',
                    permission='guillotina.Authenticated')
 async def get_conversations(context, request):
@@ -87,7 +90,7 @@ async def get_conversations(context, request):
 
 
 
-#------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------------------------------
     '''
     idealmente quando vado a prendere le notifiche
     di un solo utente, legato all'user_ID
