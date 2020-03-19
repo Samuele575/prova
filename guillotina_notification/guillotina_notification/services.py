@@ -4,93 +4,58 @@ from guillotina.interfaces import IContainer, IResourceSerializeToJsonSummary
 
 from guillotina.utils import get_current_container #, get_current_request
 
-
-#--------------------------------------------------------------------------------------------------------------------------
-@configure.service(for_=IContainer, name='@get-notifications-notified',
+#notification of only the "NOT_NOTIFIED" notification
+@configure.service(for_=IContainer, name='@get-new-notifications',
                    permission='guillotina.Authenticated')
-async def get_notification_view(context, request):
+async def get_new_notification(context, request):
     results = []
 
     container =  get_current_container()
-
-    '''
-    request = get_current_request()
-    '''
     
-    #idealmente è un singolo parametro
+    '''
+    allora i paramentri che mi interessano sono i seguenti: 
+    user_Id
+    application_name
+    notification_type
+    '''
+
     multi_params = request.query_string
 
     user_Id = 0
-    #quindi il 'for' è idealmente inutile
+    application_name = ''
+    notification_type = 'SIMPLE'
+
     for parametro in multi_params.split('&'):
         ricercato = parametro.split('=')
-        if ricercato[0] == 'userId': 
-            user_Id = ricercato[1]
+        if ricercato[0] == 'notification_type':
+            if ricercato[1] == 'EMAIL':
+                notification_type = 'EMAIL'
+            else: 
+                notification_type = 'SIMPLE'
 
+        elif  ricercato[0] == 'application_name':
+            application_name = ricercato[1]
 
-    async for item in container.async_values():
-        '''
-        allora perche lo chiamo 'item' e non 'notification'?
-        perchè l'uso della utility per le email FORZA 
-        l'installazione di guillotina_dbusers
-        quindi NON TUTTI GLI ELEMENTI IN QUESTO CONTAINER SONO NOTIFICHE
-        avrò anche 2 Folder: 'users' e 'groups'
-        '''
-        if 'Notification' == getattr(item, "type_name"): 
-            #qui idealmente si può mettere anche la ricerca sull'email
-            if getattr(item, "receverId") == user_Id and getattr(item, "status") == "NOTIFY":
-                summary = await getMultiAdapter(
-                    (item, request),
-                    IResourceSerializeToJsonSummary)()
-                results.append(summary)
-    
-    #usato per ordinare i risultati in uscita
-    results = sorted(results, key=lambda conv: conv['creation_date'])
-    return results
-
-
-
-
-
-#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-@configure.service(for_=IContainer, name='@get-notifications-not-notified',
-                   permission='guillotina.Authenticated')
-async def get_conversations(context, request):
-    results = []
-
-    container =  get_current_container()
-
-    '''
-    request = get_current_request()
-    '''
-    
-    #idealmente è un singolo parametro
-    multi_params = request.query_string
-
-    user_Id = 0
-    #quindi il 'for' è inutile
-    for parametro in multi_params.split('&'):
-        ricercato = parametro.split('=')
-        if  ricercato[0] == 'userId': 
+        elif  ricercato[0] == 'userId': 
             user_Id = ricercato[1]
 
 
     async for item in container.async_values():
         if 'Notification' == getattr(item, "type_name"): 
             #qui idealmente si può mettere anche la ricerca sull'email
-            if getattr(item, "receverId") == user_Id and getattr(item, "status") == "NOT_NOTIFY":
+            if getattr(item, "notification_type") == notification_type and getattr(item, "application_name") == application_name and getattr(item, "recipientId") == user_Id and getattr(item, "status") == "NOT_NOTIFY":
                 summary = await getMultiAdapter(
                     (item, request),
                     IResourceSerializeToJsonSummary)()
                 results.append(summary)
     
-    #usato per ordinare i risultati in uscita
+    #sort the results list
     results = sorted(results, key=lambda conv: conv['creation_date'])
     return results
 
 
 
-#------------------------------------------------------------------------------------------------------------------------------------------
+#all the notification related to user_id and application_name
     '''
     idealmente quando vado a prendere le notifiche
     di un solo utente, legato all'user_ID
@@ -98,31 +63,37 @@ async def get_conversations(context, request):
     '''
 @configure.service(for_=IContainer, name='@get-notifications',
                    permission='guillotina.Authenticated')
-async def get_notification(context, request):
+async def get_notifications(context, request):
     results = []
 
     container =  get_current_container()
 
-    '''
-    request = get_current_request()
-    '''
-    
     multi_params = request.query_string
 
-    print(multi_params)
-
     user_Id = 0
+    application_name = ''
+    notification_type = 'SIMPLE'
 
     for parametro in multi_params.split('&'):
         ricercato = parametro.split('=')
-        if ricercato[0] == 'userId': 
+        if ricercato[0] == 'notification_type':
+            if ricercato[1] == 'EMAIL':
+                notification_type = 'EMAIL'
+            else: 
+                notification_type = 'SIMPLE'
+
+        elif  ricercato[0] == 'application_name':
+            application_name = ricercato[1]
+
+        elif  ricercato[0] == 'userId': 
             user_Id = ricercato[1]
 
 
     async for item in container.async_values():
-        if 'Notification' == getattr(item, "type_name"): 
+        if 'Notification' == getattr(item, "type_name"):
+
             #qui idealmente si può mettere anche la ricerca sull'email
-            if getattr(item, "receverId") == user_Id:
+            if getattr(item, "not_type") == notification_type and getattr(item, "application_name") == application_name and getattr(item, "recipientId") == user_Id:
                 summary = await getMultiAdapter(
                     (item, request),
                     IResourceSerializeToJsonSummary)()

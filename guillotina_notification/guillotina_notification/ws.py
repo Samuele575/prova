@@ -14,15 +14,13 @@ from guillotina_notification.utility_ws import INotificationSender
 
 logger = logging.getLogger('guillotina_notification')
 
-#la richiesta che mi arriva la richiesta seguente
-#var url = BASE_URL + '/@notificate?ws_token=' + data['token'];
 @configure.service(
     context=IContainer, method='GET', allow_access=True,
     permission='guillotina.AccessContent', name='@notificate')
 async def ws_notificate(context, request):
     ws = web.WebSocketResponse()
     utility = get_utility(INotificationSender)
-
+    utility.set_Navigator()
     utility.register_ws(ws)
 
     tm = get_tm()

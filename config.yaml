@@ -49,7 +49,7 @@ cors:
   allow_credentials: true
   max_age: 3660
 jwk:
-  k: Gs-b6SGd7ZwcAZCx1UaZU_hVwRflVSf5c_EcQaEF0jc
+  k: aDuvgVVf1q5vF9A6syXvnM4oIPsBadLE3OScrGCLtfk
   kty: oct
 jwt:
   secret: foobar

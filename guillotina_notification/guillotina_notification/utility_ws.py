@@ -2,7 +2,9 @@ from guillotina.async_util import IAsyncUtility
 from guillotina.component import getMultiAdapter
 from guillotina.interfaces import IResourceSerializeToJsonSummary
 from guillotina.renderers import GuillotinaJSONEncoder
-from guillotina.utils import get_current_request 
+from guillotina.utils import get_current_request, Navigator, find_container, get_current_container
+
+from guillotina.transactions import get_tm, get_transaction
 
 import asyncio
 import json
@@ -17,11 +19,11 @@ class INotificationSender(IAsyncUtility):
 
 class NotificationSenderUtility:
 
-    def __init__(self, settings=None, loop=None):
+    def __init__(self, settings=None, loop=None, navigator=None):
         self._loop = loop
         self._settings = {}
         self._webservices = []
-
+        self.navigator = navigator
 
     def register_ws(self, ws):
         request = get_current_request()
@@ -34,21 +36,35 @@ class NotificationSenderUtility:
                 ws.user_id = ricercato[1]
 
         self._webservices.append(ws)
+
+        #it cuoldn't work here
+        self.navigator.sync()
+
         print(ws.user_id)
 
+        '''
+        context.webservices.append(ws)
+        context.register()
+        print(ws.user_id)
+        '''
 
     def unregister_ws(self, ws):
         self._webservices.remove(ws)
 
 
-#--------------------questa è il fulcro della POST per la nuova notifica
+    def set_Navigator(self):
+        container = get_current_container()
+        txn = get_transaction()
+
+        self.navigator = Navigator(txn, container)
+
     async def post_notification_in_ws_queue(self, notification):
         summary = await getMultiAdapter(
             (notification, get_current_request()),
             IResourceSerializeToJsonSummary)()
 
         await self._queue.put((notification, summary))
-#---------------semplicemente carico sulla coda principale nuove notifiche
+
 
     async def initialize(self, app=None):
         self._queue = asyncio.Queue()
@@ -56,6 +72,8 @@ class NotificationSenderUtility:
         while True:
             try:
                 notification, summary = await self._queue.get()
+
+                self.navigator.sync()
                 #test
                 print("Appena tirato fuori la notifica dalla coda")
                 for ws in self._webservices:

@@ -25,6 +25,7 @@ def includeme(root):
     configure.scan('guillotina_notification.task') #5 le nuove services.py, che implementano i metodi per la creazione di notifiche
     configure.scan('guillotina_notification.subscribers') #6 test per vedere se una semplice create_content_in_container triggera un evento
 
+    configure.scan('guillotina_notification.behaviors') #provo a creare la lista di socket aperte attraverso dei behaviors
     configure.scan('guillotina_notification.ws') #gestione apertura di una web_socket
 
     configure.scan('guillotina_notification.api')

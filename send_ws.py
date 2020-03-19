@@ -9,8 +9,8 @@ connection = pika.BlockingConnection(
 channel = connection.channel()
 
 my_func={
-        'func': 'guillotina_notification.task.post_new_notification_wsocket',
-        'args': ['Bob123', 'Bob messaggio in pipe e ws', 'Django-freeman'],
+        'func': 'guillotina_notification.task.post_new_notification',
+        'args': ['SIMPLE', 'Bob123', 'bob@bar.com', 'Bob and his second message', 'Django-freeman'],
         'kwargs': {},
 
         'user': 'root',
