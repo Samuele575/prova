@@ -5,9 +5,13 @@ from guillotina import configure, schema
 from zope.interface import Interface
 
 class IMySocketBehavior(Interface):
-    websocket = schema.List(
-        title="WebSocketList", 
-        description="The list of opened socket"
+    socket_urls = schema.Tuple(
+        title="Socket_urls",
+        description="The request used by the prepare() function",
+        value_type=schema.TextLine(),
+        required=False,
+        naive=True,
+        max_length=1000,
     )
 
 class ISocketMarcker(Interface):
@@ -21,4 +25,4 @@ class ISocketMarcker(Interface):
 class MySocketBehavior(AnnotationBehavior):
     """If attributes
     """
-    websocket = ContextProperty("websocket", ())
+    socket_urls = ContextProperty("socket_urls", ())

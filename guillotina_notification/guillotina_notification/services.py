@@ -13,10 +13,11 @@ async def get_new_notification(context, request):
     container =  get_current_container()
     
     '''
-    allora i paramentri che mi interessano sono i seguenti: 
-    user_Id
-    application_name
-    notification_type
+    from the request we need 3 param:  
+    
+    ::param: user_Id
+    ::param: application_name
+    ::param: notification_type
     '''
 
     multi_params = request.query_string
@@ -36,13 +37,12 @@ async def get_new_notification(context, request):
         elif  ricercato[0] == 'application_name':
             application_name = ricercato[1]
 
-        elif  ricercato[0] == 'userId': 
+        elif  ricercato[0] == 'userId' or ricercato[0] == 'email': 
             user_Id = ricercato[1]
 
-
+    #only the notific. with status = NOT_NOTIFIED
     async for item in container.async_values():
         if 'Notification' == getattr(item, "type_name"): 
-            #qui idealmente si può mettere anche la ricerca sull'email
             if getattr(item, "notification_type") == notification_type and getattr(item, "application_name") == application_name and getattr(item, "recipientId") == user_Id and getattr(item, "status") == "NOT_NOTIFY":
                 summary = await getMultiAdapter(
                     (item, request),
@@ -56,11 +56,6 @@ async def get_new_notification(context, request):
 
 
 #all the notification related to user_id and application_name
-    '''
-    idealmente quando vado a prendere le notifiche
-    di un solo utente, legato all'user_ID
-    quindi potrei anche fare collassare le 2 @get-notification
-    '''
 @configure.service(for_=IContainer, name='@get-notifications',
                    permission='guillotina.Authenticated')
 async def get_notifications(context, request):
@@ -85,14 +80,12 @@ async def get_notifications(context, request):
         elif  ricercato[0] == 'application_name':
             application_name = ricercato[1]
 
-        elif  ricercato[0] == 'userId': 
+        elif  ricercato[0] == 'userId' or ricercato[0] == 'email': 
             user_Id = ricercato[1]
 
-
+    #all the notific. related to a userId/email
     async for item in container.async_values():
         if 'Notification' == getattr(item, "type_name"):
-
-            #qui idealmente si può mettere anche la ricerca sull'email
             if getattr(item, "not_type") == notification_type and getattr(item, "application_name") == application_name and getattr(item, "recipientId") == user_Id:
                 summary = await getMultiAdapter(
                     (item, request),

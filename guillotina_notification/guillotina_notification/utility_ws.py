@@ -6,6 +6,9 @@ from guillotina.utils import get_current_request, Navigator, find_container, get
 
 from guillotina.transactions import get_tm, get_transaction
 
+import aiohttp
+from aiohttp import web
+
 import asyncio
 import json
 import logging
@@ -37,9 +40,6 @@ class NotificationSenderUtility:
 
         self._webservices.append(ws)
 
-        #it cuoldn't work here
-        self.navigator.sync()
-
         print(ws.user_id)
 
         '''
@@ -51,12 +51,6 @@ class NotificationSenderUtility:
     def unregister_ws(self, ws):
         self._webservices.remove(ws)
 
-
-    def set_Navigator(self):
-        container = get_current_container()
-        txn = get_transaction()
-
-        self.navigator = Navigator(txn, container)
 
     async def post_notification_in_ws_queue(self, notification):
         summary = await getMultiAdapter(
@@ -72,8 +66,7 @@ class NotificationSenderUtility:
         while True:
             try:
                 notification, summary = await self._queue.get()
-
-                self.navigator.sync()
+                
                 #test
                 print("Appena tirato fuori la notifica dalla coda")
                 for ws in self._webservices:
@@ -84,7 +77,7 @@ class NotificationSenderUtility:
                         print(notification.status)
                         await ws.send_str(json.dumps(
                             summary, cls=GuillotinaJSONEncoder))
-
+                
             except Exception:
                 logger.warn(
                     'Error sending notification',

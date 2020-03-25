@@ -20,8 +20,9 @@ logger = logging.getLogger('guillotina_notification')
 async def ws_notificate(context, request):
     ws = web.WebSocketResponse()
     utility = get_utility(INotificationSender)
-    utility.set_Navigator()
     utility.register_ws(ws)
+
+    print(request.rel_url)
 
     tm = get_tm()
     await tm.abort()
