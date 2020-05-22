@@ -1,4 +1,5 @@
 from guillotina import task_vars as g_task_vars
+from guillotina.utils import get_current_request
 
 from guillotina_amqp import task
 
@@ -55,7 +56,7 @@ async def post_new_notification(not_type, recipientId, email, message, app):
         json={ 
             '@type': 'Notification', 
             'id': random_id, 
-            'not_type': 'SIMPLE', 
+            'not_type': not_type, 
             'recipientId': recipientId,
             'email_recipient': email, 
             'subject': subject,

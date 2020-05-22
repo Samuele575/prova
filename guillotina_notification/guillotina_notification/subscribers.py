@@ -23,5 +23,5 @@ async def notification_added(notification, event):
     elif notification.not_type == 'EMAIL':
         mailer = query_utility(IMailer)
         #idealmente send(recipient=email, subject=subject, text=message)
-        await mailer.send(recipient=email, subject=subject, text=message)
+        await mailer.send(recipient=notification.recipientId, subject=notification.subject, text=notification.message)
 

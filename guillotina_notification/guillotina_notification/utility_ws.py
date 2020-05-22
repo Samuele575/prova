@@ -2,7 +2,7 @@ from guillotina.async_util import IAsyncUtility
 from guillotina.component import getMultiAdapter
 from guillotina.interfaces import IResourceSerializeToJsonSummary
 from guillotina.renderers import GuillotinaJSONEncoder
-from guillotina.utils import get_current_request, Navigator, find_container, get_current_container
+from guillotina.utils import get_current_request
 
 from guillotina.transactions import get_tm, get_transaction
 
@@ -22,11 +22,10 @@ class INotificationSender(IAsyncUtility):
 
 class NotificationSenderUtility:
 
-    def __init__(self, settings=None, loop=None, navigator=None):
+    def __init__(self, settings=None, loop=None):
         self._loop = loop
         self._settings = {}
         self._webservices = []
-        self.navigator = navigator
 
     def register_ws(self, ws):
         request = get_current_request()
@@ -41,12 +40,6 @@ class NotificationSenderUtility:
         self._webservices.append(ws)
 
         print(ws.user_id)
-
-        '''
-        context.webservices.append(ws)
-        context.register()
-        print(ws.user_id)
-        '''
 
     def unregister_ws(self, ws):
         self._webservices.remove(ws)
