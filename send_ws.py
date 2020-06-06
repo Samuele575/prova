@@ -1,44 +1,62 @@
-#!/usr/bin/env python
-import pika
+#!/usr/bin/env python3
+# countsync.py
 
+import time
+
+import pika
 import json
 import uuid
 
-connection = pika.BlockingConnection(
-    pika.ConnectionParameters(host='localhost'))
-channel = connection.channel()
+def main(*args):
+    notification_type = args[0]
+    recipient_ID = args[1]
+    recipient_email = args[2]
+    notification_subject = args[3]
+    application_name = args[4]
 
-my_func={
-        'func': 'guillotina_notification.task.post_new_notification',
-        'args': ['EMAIL', 'Bob123', 'bob@bar.com', 'Ciau Ale sono il messaggio per te su chrome', 'Django-freeman'],
-        'kwargs': {},
+    #open the connection with the rabbitMQ exchange
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters(host='localhost'))
+    channel = connection.channel()
 
-        'user': 'root',
+    #prepare the message's body, using args
+    my_func={
+            'func': 'guillotina_notification.task.post_new_notification',
+            'args': [notification_type, recipient_ID, recipient_email, notification_subject, application_name],
+            'kwargs': {},
 
-        'db_id': 'db',
-        'container_id': 'container',
+            'user': 'root',
 
-        'task_id': str(uuid.uuid4()),
+            'db_id': 'db',
+            'container_id': 'container',
 
-        'annotations': {},
+            'task_id': str(uuid.uuid4()),
 
-        'req_data': {
-                'url': 'http://localhost:8080/db/container',
-                'method': 'POST',
+            'annotations': {},
 
-                'headers': {
-                        #faccio un test con gli headers sbagliati, idealmente qui ci sarà Django come user-agent(?)
-                        #'User-Agent': 'python-requests/2.22.0',
-                        'Accept-Encoding': 'gzip, deflate',
-                        'Accept': '*/*',
-                        'Connection': 'keep-alive'
-                }
-        }
-}
+            'req_data': {
+                    'url': 'http://localhost:8080/db/container',
+                    'method': 'POST',
 
-#lo trasformo in una stringa Json con la 'dumbs'
+                    'headers': {
+                            'Accept-Encoding': 'gzip, deflate',
+                            'Accept': '*/*',
+                            'Connection': 'keep-alive'
+                    }
+            }
+    }
 
-channel.publish(exchange='guillotina', routing_key='guillotina', body=json.dumps(my_func))
-print(" [x] Sent 'Hello World!'")
+    #using the 'dumbs' function to translate the 'my_func' object in JSON 
 
-connection.close()
+    channel.publish(exchange='guillotina', routing_key='guillotina', body=json.dumps(my_func))
+    print(" [x] Sent 'Hello World!'")
+
+    connection.close()
+
+if __name__ == "__main__":
+    import sys
+    s = time.perf_counter()
+    args = [1, 2, 3, 4, 5] if len(sys.argv) == 1 else map(int, sys.argv[1:])
+    main(*args)
+    elapsed = time.perf_counter() - s
+    print(f"{__file__} executed in {elapsed:0.2f} seconds.")
