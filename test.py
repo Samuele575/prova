@@ -1,0 +1,12 @@
+import datetime
+i = datetime.datetime.now()
+print ("Data e ora corrente = %s" % i)
+print ("Data e ora ISO format = %s" % i.isoformat())
+print ("Anno corrente = %s" %i.year)
+print ("Mese corrente = %s" %i.month)
+print ("Data corrente (giorno) =  %s" %i.day)
+print ("Formato dd/mm/yyyy =  %s/%s/%s" % (i.day, i.month, i.year))
+print ("Ora corrente = %s" %i.hour)
+print ("Minuto corrente = %s" %i.minute)
+print ("Secondo corrente =  %s" %i.second)
+print ("Formato hh:mm:ss = %s:%s:%s" % (i.hour, i.minute, i.second))

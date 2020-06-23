@@ -9,6 +9,7 @@ from guillotina.transactions import get_tm, get_transaction
 import aiohttp
 from aiohttp import web
 
+import time
 import asyncio
 import json
 import logging
@@ -36,21 +37,21 @@ class NotificationSenderUtility:
             ricercato = parametro.split('=')
             if ricercato[0] == 'userId':
                 ws.user_id = ricercato[1]
+            elif ricercato[0] == 'appliction':
+                ws.app_name = ricercato[1]
 
         self._webservices.append(ws)
-
-        print(ws.user_id)
 
     def unregister_ws(self, ws):
         self._webservices.remove(ws)
 
 
-    async def post_notification_in_ws_queue(self, notification):
+    async def post_notification_in_ws_queue(self, notification, s):
         summary = await getMultiAdapter(
             (notification, get_current_request()),
             IResourceSerializeToJsonSummary)()
 
-        await self._queue.put((notification, summary))
+        await self._queue.put((notification, summary, s))
 
 
     async def initialize(self, app=None):
@@ -58,18 +59,19 @@ class NotificationSenderUtility:
 
         while True:
             try:
-                notification, summary = await self._queue.get()
+                notification, summary, s = await self._queue.get()
                 
-                #test
-                print("Appena tirato fuori la notifica dalla coda")
                 for ws in self._webservices:
-                    #test per sapere se esistono le ws
-                    print(ws.user_id)
-                    if notification.recipientId == ws.user_id:
-                        #test per capire se la ricerca va a buon fine
-                        print(notification.status)
+
+                    if notification.recipientId == ws.user_id and notification.application_name == ws.app_name:
                         await ws.send_str(json.dumps(
                             summary, cls=GuillotinaJSONEncoder))
+
+                        elapsed = time.perf_counter() - s
+                        print(f"{__file__} executed in {elapsed:0.2f} seconds.")
+                    #else: 
+                    #    elapsed = time.perf_counter() - s
+                    #    print(f"{__file__} executed in {elapsed:0.2f} seconds.")
                 
             except Exception:
                 logger.warn(

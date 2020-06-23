@@ -17,6 +17,7 @@ class NotificationJSONSummarySerializer(DefaultJSONSummarySerializer):
             'id': self.context.id,
             'creation_date': self.context.creation_date,
             'modification_date': self.context.modification_date,
+
             #serializzo le notifiche
             'not_type': self.context.not_type,
             'recipientId': self.context.recipientId,
@@ -24,6 +25,7 @@ class NotificationJSONSummarySerializer(DefaultJSONSummarySerializer):
             'subject': self.context.subject,
             'message': self.context.message,
             'application_name': self.context.application_name,
+            'notification_date': self.context.notification_date,
             'status': self.context.status,
              
             #se volessimo essere precisi: 'author': Django-Freeman 

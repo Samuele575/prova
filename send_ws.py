@@ -2,6 +2,7 @@
 # countsync.py
 
 import time
+from datetime import datetime
 
 import pika
 import json
@@ -19,10 +20,13 @@ def main(*args):
         pika.ConnectionParameters(host='localhost'))
     channel = connection.channel()
 
+    
+    i = datetime.now()
+    notification_time = i.strftime("%Y-%m-%dT%H:%M:%S.%f+00:00")
     #prepare the message's body, using args
     my_func={
             'func': 'guillotina_notification.task.post_new_notification',
-            'args': [notification_type, recipient_ID, recipient_email, notification_subject, application_name],
+            'args': [notification_type, recipient_ID, recipient_email, notification_subject, application_name, notification_time],
             'kwargs': {},
 
             'user': 'root',
@@ -56,7 +60,7 @@ def main(*args):
 if __name__ == "__main__":
     import sys
     s = time.perf_counter()
-    args = [1, 2, 3, 4, 5] if len(sys.argv) == 1 else map(int, sys.argv[1:])
+    args = ['SIMPLE', 'Bob123', 'bob@foobar.it', 'Ciao Bob inviato da Bim', 'Django'] if len(sys.argv) == 1 else map(int, sys.argv[1:])
     main(*args)
     elapsed = time.perf_counter() - s
     print(f"{__file__} executed in {elapsed:0.2f} seconds.")

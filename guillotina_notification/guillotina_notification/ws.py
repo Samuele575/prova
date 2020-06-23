@@ -22,8 +22,6 @@ async def ws_notificate(context, request):
     utility = get_utility(INotificationSender)
     utility.register_ws(ws)
 
-    print(request.rel_url)
-
     tm = get_tm()
     await tm.abort()
     await ws.prepare(request)

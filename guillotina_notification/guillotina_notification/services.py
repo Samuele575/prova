@@ -15,7 +15,7 @@ async def get_new_notification(context, request):
     '''
     from the request we need 3 param:  
     
-    ::param: user_Id
+    ::param: userId
     ::param: application_name
     ::param: notification_type
     '''
@@ -41,16 +41,16 @@ async def get_new_notification(context, request):
             user_Id = ricercato[1]
 
     #only the notific. with status = NOT_NOTIFIED
-    async for item in container.async_values():
-        if 'Notification' == getattr(item, "type_name"): 
-            if getattr(item, "notification_type") == notification_type and getattr(item, "application_name") == application_name and getattr(item, "recipientId") == user_Id and getattr(item, "status") == "NOT_NOTIFY":
-                summary = await getMultiAdapter(
-                    (item, request),
-                    IResourceSerializeToJsonSummary)()
-                results.append(summary)
+    async for item in context.async_values():
+        #if 'Notification' == getattr(item, "type_name"): 
+        if getattr(item, "not_type") == notification_type and getattr(item, "application_name") == application_name and getattr(item, "recipientId") == user_Id and getattr(item, "status") == "NOT_NOTIFIED":
+            summary = await getMultiAdapter(
+                (item, request),
+                IResourceSerializeToJsonSummary)()
+            results.append(summary)
     
     #sort the results list
-    results = sorted(results, key=lambda conv: conv['creation_date'])
+    results = sorted(results, key=lambda conv: conv['notification_date'])
     return results
 
 
@@ -58,17 +58,18 @@ async def get_new_notification(context, request):
 #all the notification related to user_id and application_name
 @configure.service(for_=IContainer, name='@get-notifications',
                    permission='guillotina.Authenticated')
-async def get_notifications(context, request):
+async def get_all_notifications(context, request):
     results = []
 
     container =  get_current_container()
 
     multi_params = request.query_string
 
-    user_Id = 0
-    application_name = ''
-    notification_type = 'SIMPLE'
+    user_Id = "foobar"
+    application_name = "Django"
+    notification_type = "SIMPLE"
 
+    
     for parametro in multi_params.split('&'):
         ricercato = parametro.split('=')
         if ricercato[0] == 'notification_type':
@@ -83,8 +84,10 @@ async def get_notifications(context, request):
         elif  ricercato[0] == 'userId' or ricercato[0] == 'email': 
             user_Id = ricercato[1]
 
+        print(ricercato[1])
+    
     #all the notific. related to a userId/email
-    async for item in container.async_values():
+    async for item in context.async_values():
         if 'Notification' == getattr(item, "type_name"):
             if getattr(item, "not_type") == notification_type and getattr(item, "application_name") == application_name and getattr(item, "recipientId") == user_Id:
                 summary = await getMultiAdapter(
@@ -93,5 +96,5 @@ async def get_notifications(context, request):
                 results.append(summary)
     
     #usato per ordinare i risultati in uscita
-    results = sorted(results, key=lambda conv: conv['creation_date'])
+    results = sorted(results, key=lambda conv: conv['notification_date'])
     return results

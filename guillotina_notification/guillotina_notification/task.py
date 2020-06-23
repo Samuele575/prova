@@ -3,6 +3,9 @@ from guillotina.utils import get_current_request
 
 from guillotina_amqp import task
 
+import time
+from datetime import datetime
+
 import json
 import random
 import requests
@@ -28,27 +31,19 @@ status------------->non inviato, ma usato, uso 2 stati fissi
 '''
 
 @task
-async def post_new_notification(not_type, recipientId, email, message, app):
+async def post_new_notification(not_type, recipientId, email, message, app, not_time):
 
     #import pdb; pdb.set_trace()
+    s = time.perf_counter()
 
     subject = ("Notification to " + recipientId)
 
-    random_id = ('Notify_to_' + recipientId + '_' + str(len(message)+random.randint(0,10)) + '_' + str(len(recipientId)+random.randint(0,10)) + '_' + str(len(app)+random.randint(0,10)))
+    random_id = ('Notify_to_' + recipientId + '_' + str(len(message)+random.randint(0,1000)) + '_' + str(len(recipientId)+random.randint(0,1000)) + '_' + str(len(app)+random.randint(0,1000)))
 
     task_request = get_current_request()
 
-    print(str(task_request.url))
-    '''
-    notification = await create_content_in_container(
-                parent, 'Notification', 
-                random_id, id=random_id,
-                check_security=False, not_type=not_type,
-                recipientId=recipientId, message=message, 
-                email_recipient=email, subject=subject,
-                status='NOT_NOTIFIED', application_name=app,
-                creators=('root',), contributors=('root',))
-    '''
+    #format = '%Y-%m-%dT%H:%M:%S.%f+00:00' # The format 
+    #datetime_str = datetime.strptime(not_time, format)
 
     requests.post(
         str(task_request.url), 
@@ -62,9 +57,11 @@ async def post_new_notification(not_type, recipientId, email, message, app):
             'subject': subject,
             'message': message,
             'application_name': app,
+            'notification_date': not_time,
             'status': 'NOT_NOTIFIED', }, 
         auth=('root', 'root'))
 
-    print('request dal task...hahahahahaha')
+    print(task_request.url)
 
-    #await notify(ObjectAddedEvent(notification, parent, random_id))
+    elapsed = time.perf_counter() - s
+    print(f"{__file__} executed in {elapsed:0.2f} seconds.")
